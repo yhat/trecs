@@ -8,31 +8,30 @@ def get_locs(t):
     left = int(t['left'])
     return {"top": top, "bottom": bottom, "left": left}
 
+class Text_el:
+    def __init__(self):
+        self.top = "_"
+        self.left ="_"
+        self.width ="_"
+        self.height ="_"
+        self.font ="_"
+        self.text ="_"
 
 def main():
-    soup = BeautifulSoup(open("../html/pdftohtml_DangerousDog_map.xml").read())
+    soup = BeautifulSoup(open("xml/dangerous_dog.xml").read())
+    all_tags = soup.find_all("text")
+    Line_els = []
 
-    lines = []
+    for tag in all_tags:
+        new_text = Text_el()
+        for key,value in tag.attrs.iteritems():
+            setattr(new_text, key, int(value))
+        setattr(new_text, 'text', tag.text)
 
-    for t in soup.find_all("text"):
-        if not lines:
-            lines.append([t])
-            continue
-        else:
-            pl = lines[-1][-1]
+        Line_els.append(new_text)
 
-        pl = get_locs(pl)
-        line = get_locs(t)
-        if (line['top'] <= pl['bottom'] and line['top'] >= pl['top']) or (line['bottom'] <= pl['bottom'] and line['bottom'] >= pl['top']):
-            lines[-1].append(t)
-        else:
-            lines.append([t])
-    return lines
+    return Line_els
 
 if __name__=="__main__":
     lines = main()
-    for line in lines:
-        for item in line:
-            print item.text,
-        print
-        print "*"*80
+    print vars(lines[0])
